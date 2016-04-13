@@ -8,7 +8,11 @@ class Movie():
         trailer_youtube_url: URL of the youtube trailer
     """
     
-    def __init__(self, movie_title, movie_description, poster_image_url, trailer_youtube_url):
+    def __init__(self,
+                 movie_title,
+                 movie_description,
+                 poster_image_url,
+                 trailer_youtube_url):
         """Inits a Movie with specified informations."""
         self.title = movie_title
         self.description = movie_description
