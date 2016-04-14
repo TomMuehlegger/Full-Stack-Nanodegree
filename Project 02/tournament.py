@@ -5,6 +5,7 @@
 
 import psycopg2
 
+
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
     return psycopg2.connect("dbname=tournament")
@@ -14,29 +15,32 @@ def deleteMatches():
     """Remove all the match records from the database."""
     db = connect()
     c = db.cursor()
-    query = """DELETE FROM matches;""";
-    c.execute(query);
+    query = """DELETE FROM matches;"""
+    c.execute(query)
     db.commit()
     db.close()
 
+    
 def deletePlayers():
     """Remove all the player records from the database."""
     db = connect()
     c = db.cursor()
-    query = """DELETE FROM players;""";
-    c.execute(query);
+    query = """DELETE FROM players;"""
+    c.execute(query)
     db.commit()
     db.close()
 
+    
 def countPlayers():
     """Returns the number of players currently registered."""
     db = connect()
     c = db.cursor()
-    query = """SELECT COUNT(id) FROM players;""";
-    c.execute(query);
+    query = """SELECT COUNT(id) FROM players;"""
+    c.execute(query)
     results = c.fetchall()
     db.close()
     return int(results[0][0])
+
 
 def registerPlayer(name):
     """Adds a player to the tournament database.
@@ -50,8 +54,8 @@ def registerPlayer(name):
     db = connect()
     c = db.cursor()
     # Be aware of security issues
-    query = """INSERT INTO players (name) VALUES (%s);""";
-    c.execute(query, (name,));
+    query = """INSERT INTO players (name) VALUES (%s);"""
+    c.execute(query, (name,))
     db.commit()
     db.close()
 
@@ -59,8 +63,8 @@ def registerPlayer(name):
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
 
-    The first entry in the list should be the player in first place, or a player
-    tied for first place if there is currently a tie.
+    The first entry in the list should be the player in first place, or 
+    a player tied for first place if there is currently a tie.
 
     Returns:
       A list of tuples, each of which contains (id, name, wins, matches):
@@ -92,10 +96,11 @@ def playerStandings():
                 ON wins.id = total.id
                 ORDER BY wins DESC;"""
 
-    c.execute(query);
+    c.execute(query)
     results = c.fetchall()
     db.close()
     return results
+
 
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
@@ -106,8 +111,8 @@ def reportMatch(winner, loser):
     """
     db = connect()
     c = db.cursor()
-    query = """INSERT INTO matches (winner, loser) VALUES (%s, %s);""";
-    c.execute(query, (int(winner), int(loser)));
+    query = """INSERT INTO matches (winner, loser) VALUES (%s, %s);"""
+    c.execute(query, (int(winner), int(loser)))
     db.commit()
     db.close()
  
@@ -149,5 +154,3 @@ def swissPairings():
         i = i+1
 
     return pairings
-
-
