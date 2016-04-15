@@ -1,9 +1,12 @@
 -- Table definitions for the tournament project.
 -- 
 
--- To create the database use:
+-- Create the database if not existing
+-- and establish connection
 -- 
--- CREATE DATABASE tournament;
+DROP DATABASE IF EXISTS tournament;
+CREATE DATABASE tournament;
+\c tournament;
 -- 
 -- Then connect to the database -> psql tournament
 -- and execute the following commands.

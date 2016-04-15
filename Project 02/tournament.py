@@ -6,38 +6,48 @@
 import psycopg2
 
 
-def connect():
-    """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
+def connect(database_name="tournament"):
+    """Connect to the PostgreSQL database.  
+       Returns a database connection and it's cursor.
+    """
+    try:
+        db = psycopg2.connect("dbname={}".format(database_name))
+        cursor = db.cursor()
+        return db, cursor
+    except:
+        print("<error message>")
 
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    db = connect()
-    c = db.cursor()
+    db, cursor = connect()
+    
     query = """DELETE FROM matches;"""
-    c.execute(query)
+    cursor.execute(query)
+    
     db.commit()
     db.close()
 
     
 def deletePlayers():
     """Remove all the player records from the database."""
-    db = connect()
-    c = db.cursor()
+    db, cursor = connect()
+    
     query = """DELETE FROM players;"""
-    c.execute(query)
+    cursor.execute(query)
+    
     db.commit()
     db.close()
 
     
 def countPlayers():
     """Returns the number of players currently registered."""
-    db = connect()
-    c = db.cursor()
+    db, cursor = connect()
+    
     query = """SELECT COUNT(id) FROM players;"""
-    c.execute(query)
-    results = c.fetchall()
+    cursor.execute(query)
+    results = cursor.fetchall()
+    
     db.close()
     return int(results[0][0])
 
@@ -51,11 +61,13 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    db = connect()
-    c = db.cursor()
+    db, cursor = connect()
+    
     # Be aware of security issues
     query = """INSERT INTO players (name) VALUES (%s);"""
-    c.execute(query, (name,))
+    parameter = (name,)
+    cursor.execute(query, parameter)
+    
     db.commit()
     db.close()
 
@@ -73,31 +85,29 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    db = connect()
-    c = db.cursor()
-    query = """SELECT wins.id, wins.name, wins.wins, total.total as matches
+    db, cursor = connect()
+    
+    query = """ CREATE VIEW wins AS
+                SELECT p.id, p.name, COUNT(m.winner) AS wins
+                FROM players AS p LEFT JOIN matches AS m
+                ON (m.winner = p.id)
+                GROUP BY p.id;
+                
+                CREATE VIEW total AS
+                SELECT p.id, p.name, COUNT(m.winner) AS total
+                FROM players AS p LEFT JOIN matches AS m
+                ON (m.winner = p.id) OR (m.loser = p.id)
+                GROUP BY p.id;
+    
+                SELECT wins.id, wins.name, wins.wins, total.total as matches
                 FROM
-                (
-                    SELECT p.id, p.name, COUNT(m.winner) AS wins
-                    FROM players AS p LEFT JOIN matches AS m
-                    ON (m.winner = p.id)
-                    GROUP BY p.id
-                ) AS wins
-                    
-                LEFT JOIN
-                    
-                (
-                    SELECT p.id, p.name, COUNT(m.winner) AS total
-                    FROM players AS p LEFT JOIN matches AS m
-                    ON (m.winner = p.id) OR (m.loser = p.id)
-                    GROUP BY p.id
-                ) AS total
-                    
+                wins LEFT JOIN total   
                 ON wins.id = total.id
                 ORDER BY wins DESC;"""
 
-    c.execute(query)
-    results = c.fetchall()
+    cursor.execute(query)
+    results = cursor.fetchall()
+    
     db.close()
     return results
 
@@ -109,10 +119,12 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    db = connect()
-    c = db.cursor()
+    db, cursor = connect()
+    
     query = """INSERT INTO matches (winner, loser) VALUES (%s, %s);"""
-    c.execute(query, (int(winner), int(loser)))
+    parameter = (int(winner), int(loser))
+    cursor.execute(query, parameter)
+    
     db.commit()
     db.close()
  
