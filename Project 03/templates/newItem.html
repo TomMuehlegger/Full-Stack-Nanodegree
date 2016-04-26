@@ -1,0 +1,28 @@
+{% extends "main.html" %}
+{% block content %}
+    <h1>New Item</h1>
+
+    <form action="#" method = 'post'>
+        <p>Title:</p>
+        <input class="form-control inputField" type='text' size='30' name='title' placeholder='Title'>
+
+        <p>Description:</p>
+        <input class="form-control inputField" type='text' size='30' name='description' placeholder='Description'>
+
+        <p>Category:</p>
+        <select class="form-control inputField" name='category_id'>
+            {% for category in categories %}
+              <option value='{{category.id}}'>{{category.name}}</option>
+            {% endfor %}
+        </select>
+
+        <p>Price:</p>
+        <div class="input-group inputField">
+            <span class="input-group-addon">$</span>
+            <input type="text" class="form-control" name='price' placeholder='Price e.g.: $20.50'>
+        </div>
+
+        <input class="btn btn-success" type='submit' value='Create'>
+        <a class="btn btn-danger" href = '{{url_for('showCatalog')}}'>Cancel</a>
+    </form>
+{% endblock %}

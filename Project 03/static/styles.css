@@ -1,0 +1,31 @@
+body {
+    background-color: lightgray;
+}
+
+h1 {
+    color: darkslategrey;
+}
+
+header {
+    background-color: darkslategrey;
+    height:80px;
+    margin-bottom: 20px;
+}
+
+.content {
+	background-color: #fff;
+    padding: 20px;
+}
+
+a.home {
+    color: white;
+}
+
+.headerButton {
+    margin-top: 20px;
+}
+
+.inputField {
+    width: 400px;
+    margin-bottom: 20px;
+}
