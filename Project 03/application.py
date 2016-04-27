@@ -33,6 +33,13 @@ def login_required(f):
     return decorated_function
 
 
+@app.errorhandler(401)
+def page_not_found(error):
+    """ Handle 401 error """
+    flash('Please login', 'error')
+    return redirect(url_for('login'))
+
+
 @app.route('/login')
 def login():
     """ Login routine """
@@ -185,9 +192,9 @@ def catalogJSON(category_id):
         categories = db_session.query(Category).filter_by(id=category_id).one()
         items = db_session.query(Item).filter_by(category_id=category_id).all()
         return jsonify(Category=categories.serialize,
-                       Items=[i.serialize for i in items])
+                   Items=[i.serialize for i in items])
     except NoResultFound:
-        return '[404]'
+        return jsonify([]), 404
 
 
 @app.route('/')
