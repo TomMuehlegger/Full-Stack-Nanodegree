@@ -2,7 +2,7 @@
 
 Project: Catalog App (Project 03) of Udacity's Full-Stack Web Developer Nanodegree
 
-Author: Thomas Muehlegger
+Author: Thomas Mühlegger
 
 # About
 
