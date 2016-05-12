@@ -1,38 +1,12 @@
-"""models.py - This file contains the class definitions for the Datastore
-entities used by the Game. Because these classes are also regular Python
-classes they can include methods (such as 'to_form' and 'new_game')."""
+"""game.py - This file contains the class definitions for the Datastore
+entities used for game handling."""
 
 import random
 from datetime import date
 from protorpc import messages
 from google.appengine.ext import ndb
-
-
-class User(ndb.Model):
-    """User profile"""
-    name = ndb.StringProperty(required=True)
-    email = ndb.StringProperty()
-    score = ndb.IntegerProperty(required=True, default=0)
-    finished_games = ndb.IntegerProperty(required=True, default=0)
-    avg_score = ndb.FloatProperty(required=True, default=0.0)
-    best_score = ndb.IntegerProperty(required=True, default=0)
-
-    def finished_game(self, score):
-        """User finished a game - update scores"""
-        if score > self.best_score:
-            self.best_score = score
-
-        self.score += score
-        self.finished_games += 1
-        self.avg_score = self.score / self.finished_games
-        self.put()
-
-    def to_user_rank_form(self):
-        return UserRankingForm(user_name=self.name,
-                               avg_score=self.avg_score,
-                               finished_games=self.finished_games,
-                               best_score=self.best_score,
-                               score=self.score)
+from user import User
+from score import Score
 
 
 class GameHistoryEntry(ndb.Model):
@@ -121,22 +95,6 @@ class Game(ndb.Model):
         score.put()
 
 
-class Score(ndb.Model):
-    """Score object"""
-    user = ndb.KeyProperty(required=True, kind='User')
-    date = ndb.DateProperty(required=True)
-    attempts_done = ndb.IntegerProperty(required=True)
-    card_cnt = ndb.IntegerProperty(required=True)
-    score = ndb.IntegerProperty(required=True)
-
-    def to_form(self):
-        return ScoreForm(user_name=self.user.get().name,
-                         date=str(self.date),
-                         attempts_done=self.attempts_done,
-                         card_cnt=self.card_cnt,
-                         score=self.score)
-
-
 class GameResponseForm(messages.Message):
     """GameForm for outbound game state information"""
     urlsafe_key = messages.StringField(1, required=True)
@@ -166,34 +124,6 @@ class MakeMoveForm(messages.Message):
     card_index = messages.IntegerField(1, required=True)
 
 
-class ScoreForm(messages.Message):
-    """ScoreForm for outbound Score information"""
-    user_name = messages.StringField(1, required=True)
-    date = messages.StringField(2, required=True)
-    attempts_done = messages.IntegerField(3, required=True)
-    card_cnt = messages.IntegerField(4, required=True)
-    score = messages.IntegerField(5, required=True)
-
-
-class ScoreForms(messages.Message):
-    """Return multiple ScoreForms"""
-    items = messages.MessageField(ScoreForm, 1, repeated=True)
-
-
-class UserRankingForm(messages.Message):
-    """UserRankingForm for user Score information"""
-    user_name = messages.StringField(1, required=True)
-    avg_score = messages.FloatField(2, required=True)
-    finished_games = messages.IntegerField(3, required=True)
-    best_score = messages.IntegerField(4, required=True)
-    score = messages.IntegerField(5, required=True)
-
-
-class UserRankingForms(messages.Message):
-    """Return multiple ScoreForms"""
-    items = messages.MessageField(UserRankingForm, 1, repeated=True)
-
-
 class GameHistoryEntryForm(messages.Message):
     """GameHistoryEntryForm for a game history entry"""
     card_01 = messages.IntegerField(1, required=True)
@@ -204,8 +134,3 @@ class GameHistoryEntryForm(messages.Message):
 class GameHistoryForm(messages.Message):
     """Return the GameHistoryEntryForms"""
     items = messages.MessageField(GameHistoryEntryForm, 1, repeated=True)
-
-
-class StringMessage(messages.Message):
-    """StringMessage-- outbound (single) string message"""
-    message = messages.StringField(1, required=True)

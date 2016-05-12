@@ -5,15 +5,16 @@ move game logic to another file. Ideally the API will be simple, concerned
 primarily with communication to/from the API's users."""
 
 
-import logging
 import endpoints
 from protorpc import remote, messages
 from google.appengine.api import memcache
 from google.appengine.api import taskqueue
 
-from models import User, Game, Score, GameHistoryEntry
-from models import StringMessage, NewGameForm, GameResponseForm, MakeMoveForm,\
-     ScoreForms, UserGamesResponseForm, UserRankingForms, GameHistoryForm
+from models.user import User, UserRankingForms
+from models.game import Game, GameHistoryEntry, NewGameForm,\
+    GameResponseForm, MakeMoveForm, UserGamesResponseForm, GameHistoryForm
+from models.score import Score, ScoreForms
+from models.models import StringMessage
 from utils import get_by_urlsafe
 
 NEW_GAME_REQUEST = endpoints.ResourceContainer(NewGameForm)
@@ -105,7 +106,10 @@ class MemoryApi(remote.Service):
 
         if game.finished:
             return game.to_form('Game already finished!')
-
+        
+        if not request.card_index in range (game.card_cnt):
+            return game.to_form('Card index out of range!')
+        
         if game.first_index != -1 and game.second_index != -1:
             # Reset the previous move -> no pair found
             game.public_game_field[game.first_index] = 0
@@ -204,7 +208,13 @@ class MemoryApi(remote.Service):
                     'A User with that name does not exist!')
 
         # Return only active games (not finished)
-        games = Game.query(Game.user == user.key).filter(not Game.finished)
+        games = Game.query(Game.user == user.key)\
+            .filter(Game.finished == False)
+
+        if games is None:
+            raise endpoints.NotFoundException(
+                    'User has no active games!')
+            
         return UserGamesResponseForm(user_name=user.name,
                                      games=[gam.to_form('') for gam in games])
 
@@ -265,7 +275,7 @@ class MemoryApi(remote.Service):
             count = len(games)
             total_attempts_done = sum([game.attempts_done
                                        for game in games])
-            average = float(total_attempts_done)/count
+            average = float(total_attempts_done) / count
             memcache.set(MEMCACHE_MOVES_DONE,
                          'The average moves done for finished games is {:.2f}'
                          .format(average))

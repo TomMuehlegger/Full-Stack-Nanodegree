@@ -8,8 +8,8 @@ import webapp2
 from google.appengine.api import mail, app_identity
 from api import MemoryApi
 
-from models import User, Game
-
+from models.game import Game
+from models.user import User
 
 class SendReminderEmail(webapp2.RequestHandler):
     def get(self):
@@ -20,7 +20,7 @@ class SendReminderEmail(webapp2.RequestHandler):
         for user in users:
             # Get the first of all ative games of the user
             game = Game.query(Game.user == user.key)\
-                    .filter(not Game.finished).get()
+                    .filter(Game.finished == false)
 
             # If at least one open game exists
             if game is not None:
