@@ -135,7 +135,10 @@ given time. Each game can be retrieved or played by using the path parameter
     - Parameters: urlsafe_game_key
     - Returns: GameHistoryForm
     - Description: Returns the history of moves of a game.
-    E.g.: []
+    E.g.: {"items": [{"card_01": "0", "card_02": "1",
+                      "result": "Card 02 turned around - Found a valid pair!"},
+                     {"card_01": "2", "card_02": "3",
+                      "result": "Card 02 turned around - Found a valid pair!"}]}
     
 ##Models Included:
  - **User**
@@ -143,7 +146,7 @@ given time. Each game can be retrieved or played by using the path parameter
     of all finished games, the number of finished games, the average score of
     all finished games and the personal highscore.
     
-- **GameHistoryEntry**
+ - **GameHistoryEntry**
     - Stores the information of a valid move. Which cards were affected and if
     a valid pair found or not.
     
