@@ -16,24 +16,23 @@ class User(ndb.Model):
     finished_games = ndb.IntegerProperty(required=True, default=0)
     avg_score = ndb.FloatProperty(required=True, default=0.0)
     best_score = ndb.IntegerProperty(required=True, default=0)
-    
+
     def finished_game(self, score):
         """User finished a game - update scores"""
         if score > self.best_score:
             self.best_score = score
-            
+
         self.score += score
         self.finished_games += 1
         self.avg_score = self.score / self.finished_games
         self.put()
-        
+
     def to_user_rank_form(self):
         return UserRankingForm(user_name=self.name,
-                               avg_score = self.avg_score,
-                               finished_games = self.finished_games,
-                               best_score = self.best_score,
-                               score = self.score
-                               )
+                               avg_score=self.avg_score,
+                               finished_games=self.finished_games,
+                               best_score=self.best_score,
+                               score=self.score)
 
 
 class GameHistoryEntry(ndb.Model):
@@ -45,8 +44,7 @@ class GameHistoryEntry(ndb.Model):
     def to_form(self):
         return GameHistoryEntryForm(card_01=self.card_01,
                                     card_02=self.card_02,
-                                    result=self.result
-                                    )    
+                                    result=self.result)
 
 
 class Game(ndb.Model):
@@ -67,28 +65,28 @@ class Game(ndb.Model):
         """Creates and returns a new game"""
         if card_cnt < 4:
             raise ValueError('Minimum number of cards is 4!')
-        
+
         if card_cnt % 2:
             raise ValueError('Number must be divisible by 2!')
-        
+
         game = Game(user=user,
                     card_cnt=card_cnt)
-        
+
         shuffled_list = []
-        
+
         # Create a list like [1,1,2,2,3,3,...]
         for i in xrange(0, card_cnt):
             shuffled_list.append((i / 2) + 1)
-          
+
         # Do a random shuffle
         random.shuffle(shuffled_list)
 
         # Initialize both game_field arrays with zero
         # Zero => unknown memory image
         for i in xrange(0, card_cnt):
-            game.game_field.append(shuffled_list.pop());
-            game.public_game_field.append(0);
-        
+            game.game_field.append(shuffled_list.pop())
+            game.public_game_field.append(0)
+
         game.put()
         return game
 
@@ -109,18 +107,17 @@ class Game(ndb.Model):
         """Finish the game - user successfully finished the game."""
         self.finished = True
         self.put()
-        
+
         # Update user score
         user = self.user.get()
         user.finished_game(self.score)
-        
+
         # Add the game to the score 'board'
-        score = Score(user=self.user, 
+        score = Score(user=self.user,
                       date=date.today(),
                       attempts_done=self.attempts_done,
                       card_cnt=self.card_cnt,
-                      score=self.score
-                      )
+                      score=self.score)
         score.put()
 
 
@@ -134,11 +131,10 @@ class Score(ndb.Model):
 
     def to_form(self):
         return ScoreForm(user_name=self.user.get().name,
-                         date=str(self.date), 
+                         date=str(self.date),
                          attempts_done=self.attempts_done,
                          card_cnt=self.card_cnt,
-                         score=self.score
-                         )
+                         score=self.score)
 
 
 class GameResponseForm(messages.Message):

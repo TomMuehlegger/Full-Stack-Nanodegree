@@ -13,7 +13,7 @@ from google.appengine.api import taskqueue
 
 from models import User, Game, Score, GameHistoryEntry
 from models import StringMessage, NewGameForm, GameResponseForm, MakeMoveForm,\
-    ScoreForms, UserGamesResponseForm, UserRankingForms, GameHistoryForm
+     ScoreForms, UserGamesResponseForm, UserRankingForms, GameHistoryForm
 from utils import get_by_urlsafe
 
 NEW_GAME_REQUEST = endpoints.ResourceContainer(NewGameForm)
@@ -36,6 +36,7 @@ GET_GAME_HISTORY_REQUEST = endpoints.ResourceContainer(
         urlsafe_game_key=messages.StringField(1),)
 
 MEMCACHE_MOVES_DONE = 'MOVES_DONE'
+
 
 @endpoints.api(name='memory', version='v1')
 class MemoryApi(remote.Service):
@@ -101,32 +102,34 @@ class MemoryApi(remote.Service):
     def make_move(self, request):
         """Makes a move. Returns a game state with message"""
         game = get_by_urlsafe(request.urlsafe_game_key, Game)
-        
+
         if game.finished:
             return game.to_form('Game already finished!')
-        
+
         if game.first_index != -1 and game.second_index != -1:
             # Reset the previous move -> no pair found
             game.public_game_field[game.first_index] = 0
             game.public_game_field[game.second_index] = 0
             game.first_index = -1
             game.second_index = -1
-            
+
         if game.public_game_field[request.card_index] != 0:
             return game.to_form('Card already turned around!')
 
         # First card of a move turned already around
         if game.first_index != -1:
             # Second card not turned around
-            game.public_game_field[request.card_index] = game.game_field[request.card_index]
+            game.public_game_field[request.card_index] =\
+                game.game_field[request.card_index]
             game.attempts_done += 1
             game.second_index = request.card_index
-            
+
             card_01 = game.first_index
             card_02 = game.second_index
 
             # Found a valid pair
-            if game.public_game_field[game.first_index] == game.game_field[request.card_index]:
+            if game.public_game_field[game.first_index] ==\
+               game.game_field[request.card_index]:
                 game.first_index = -1
                 game.second_index = -1
                 game.score += 20
@@ -135,7 +138,6 @@ class MemoryApi(remote.Service):
                 # If found a valid pair and no cards left -> game finished
                 if 0 not in game.public_game_field:
                     # To update the score when finishing the game
-                    #game.put()
                     game.finish_game()
                     msg = 'Card 02 turned around - Found pair - Game finished!'
             # Found no pair
@@ -152,9 +154,10 @@ class MemoryApi(remote.Service):
         else:
             # Turn around the first card of a move
             game.first_index = request.card_index
-            game.public_game_field[request.card_index] = game.game_field[request.card_index]
+            game.public_game_field[request.card_index] =\
+                game.game_field[request.card_index]
             msg = 'Card 01 turned around!'
-            
+
         game.put()
         return game.to_form(msg)
 
@@ -165,7 +168,7 @@ class MemoryApi(remote.Service):
     def get_scores(self, request):
         """Return all scores"""
         return ScoreForms(items=[score.to_form() for score in Score.query()])
-    
+
     @endpoints.method(request_message=GET_USER_SCORES_REQUEST,
                       response_message=ScoreForms,
                       path='scores/user/{user_name}',
@@ -187,7 +190,7 @@ class MemoryApi(remote.Service):
     def get_average_attempts(self, request):
         """Get the cached average moves done of all finished games"""
         return StringMessage(message=memcache.get(MEMCACHE_MOVES_DONE) or '')
-    
+
     @endpoints.method(request_message=GET_USER_GAMES_REQUEST,
                       response_message=UserGamesResponseForm,
                       path='games/user/{user_name}',
@@ -199,11 +202,11 @@ class MemoryApi(remote.Service):
         if not user:
             raise endpoints.NotFoundException(
                     'A User with that name does not exist!')
-        
+
         # Return only active games (not finished)
-        games = Game.query(Game.user == user.key).filter(Game.finished == False)
+        games = Game.query(Game.user == user.key).filter(not Game.finished)
         return UserGamesResponseForm(user_name=user.name,
-                                     games=[game.to_form('') for game in games])
+                                     games=[gam.to_form('') for gam in games])
 
     @endpoints.method(request_message=CANCEL_GAME_REQUEST,
                       response_message=StringMessage,
@@ -218,7 +221,7 @@ class MemoryApi(remote.Service):
             return StringMessage(message='Game deleted!')
         else:
             raise endpoints.ForbiddenException('Game finished - not allowed!')
-    
+
     @endpoints.method(request_message=GET_HIGH_SCORE_REQUEST,
                       response_message=ScoreForms,
                       path='scores/leaderboard',
@@ -227,7 +230,8 @@ class MemoryApi(remote.Service):
     def get_high_scores(self, request):
         """Return a specified number of the leader board"""
         # Generates a high score list with descending order
-        scores = Score.query().order(-Score.score).fetch(request.number_of_results)
+        scores = Score.query().order(-Score.score)\
+            .fetch(request.number_of_results)
         return ScoreForms(items=[score.to_form() for score in scores])
 
     @endpoints.method(response_message=UserRankingForms,
@@ -236,8 +240,9 @@ class MemoryApi(remote.Service):
                       http_method='GET')
     def get_user_rankings(self, request):
         """Return all user rankings"""
-        return UserRankingForms(items=[user.to_user_rank_form() for user in User.query()])
-    
+        return UserRankingForms(items=[user.to_user_rank_form()
+                                       for user in User.query()])
+
     @endpoints.method(request_message=GET_GAME_HISTORY_REQUEST,
                       response_message=GameHistoryForm,
                       path='game/history/{urlsafe_game_key}',
@@ -247,21 +252,23 @@ class MemoryApi(remote.Service):
         """Return the game history of a game"""
         game = get_by_urlsafe(request.urlsafe_game_key, Game)
         if game:
-            return GameHistoryForm(items=[history.to_form() for history in game.history])
+            return GameHistoryForm(items=[history.to_form()
+                                          for history in game.history])
         else:
             raise endpoints.NotFoundException('Game not found!')
 
     @staticmethod
     def _cache_average_attempts():
         """Populates memcache with the average moves remaining of Games"""
-        games = Game.query(Game.finished == True).fetch()
+        games = Game.query(Game.finished).fetch()
         if games:
             count = len(games)
             total_attempts_done = sum([game.attempts_done
-                                        for game in games])
+                                       for game in games])
             average = float(total_attempts_done)/count
             memcache.set(MEMCACHE_MOVES_DONE,
-                         'The average moves done for finished games is {:.2f}'.format(average))
+                         'The average moves done for finished games is {:.2f}'
+                         .format(average))
 
 
 api = endpoints.api_server([MemoryApi])
