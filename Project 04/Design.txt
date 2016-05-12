@@ -1,0 +1,86 @@
+What additional properties did you add to your models and why?
+
+    Added following properties to the different models:
+    
+    - User    
+        - score: The User's total score of all finished games. 
+            Needed to calculate the average score every time a game finished
+            
+        - finished_games: The number of games the user finished.
+            Needed to calculate the average score by dividing the total score
+            by the number of finished games.
+            
+        - avg_score: The average score of the user. This is the performance
+            indicator of each user.
+            
+        - best_score: The personal highscore of the user. Could also be a
+            performance indicator.
+            
+    - GameHistoryEntry (new model to store a game history)
+        - card_01: Index of the first card flipped in a valid move
+        
+        - card_02: Index of the second card flipped in a valid move
+        
+        - result: Contains information, about a valid move -
+                'Card 02 turned around - Found a valid pair!',
+                'Card 02 turned around - No pair found!', or
+                'Card 02 turned around - Found pair - Game finished!'.
+                
+    - Game
+        - game_field: Array of card values (integer). The gamefield is not visible
+            for the user (client). Holds the secret information about all cards.
+            
+        - public_game_field: Array of card values (integer). At gamestart all values
+            are 0 (card value unknown). The public_game_field stores all found pairs
+            and the actual flipped cards.
+            
+        - attempts_done: Stores the number of moves (flip two cards is a valid move) done
+            to calculate the average number of all moves done.
+            
+        - card_cnt: The number of cards for the game_field to initialize the arrays.
+        
+        - finished: A flag if the game already finished. Needed to filter active games.
+        
+        - first_index: The first card's index of the last move. Neccessary to reset the 
+            flipped cards of an unsuccessful move afterwards. Value is -1 if no card was 
+            flipped before or if a valid pair found.
+            
+        - second_index: The second card's index of the last move. Neccessary to reset the 
+            flipped cards of an unsuccessful move afterwards. Value is -1 if no card was 
+            flipped before or if a valid pair found.
+            
+        - score: Holds the score value of the game.
+        
+        - history: Represents the history of each move done by the player.
+        
+    - Score
+        - attempts_done: The number of attempts done by the user to finish the game.
+        
+        - card_cnt: The number of cards of the finished game.
+        
+        - score: HOlds the score value of the finished game.
+        
+        
+        
+    What were some of the trade-offs or struggles you faced when implementing the new game logic?
+    
+        - How to show the user the card values of an unsuccessful (no pair match) move?
+            
+            Some considerations:
+                - Delete the card values after some time? - not a good solution in my opinion!
+                
+                - Extra endpoint to reset the old card values? - maybe good?
+                
+                - Store the card values of the previous move till the next move is done - actual implementation!
+                    Therefore the properties 'first_index' and 'second_index' of the Game model are necessary.
+                    
+        - How to store the game field?
+            
+            Some considerations:
+                
+                - Use a multidimensional array? - unnecessary complicated!
+                
+                - Use array of model? - Why? Not necessary!
+                
+                - Store card values as integer array - actual implementation!
+                    The easiest way of implementation.
