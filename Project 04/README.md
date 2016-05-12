@@ -11,12 +11,16 @@
  
  
 ##Game Description:
-Guess a number is a simple guessing game. Each game begins with a random 'target'
-number between the minimum and maximum values provided, and a maximum number of
-'attempts'. 'Guesses' are sent to the `make_move` endpoint which will reply
-with either: 'too low', 'too high', 'you win', or 'game over' (if the maximum
-number of attempts is reached).
-Many different Guess a Number games can be played by many different Users at any
+Memory is a simple concentration game. Cards are laid out in a grid face down, 
+and the player take turns flipping pairs of cards over. On each turn, the player
+will first turn one card over, then a second. Every card flip is sent to the
+`make_move` endpoint which will reply the new game state.
+If the two cards match, the player scores 20 points, the two cards are removed 
+from the game (but they are still there), and the player gets another turn. If 
+they do not match, the score decreases by 5 and the cards are turned back over 
+at the next move. If there is no pair left, the user finished the game.
+
+Many different Memory games can be played by many different Users at any
 given time. Each game can be retrieved or played by using the path parameter
 `urlsafe_game_key`.
 
