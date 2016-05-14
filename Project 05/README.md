@@ -39,7 +39,7 @@ ssh -i ~/.ssh/udacity_key.rsa root@52.36.159.226
 ```bash
 adduser grader
 ```
-Follow the instructions (password: grader)
+Follow the instructions (password: 9bcg90e2ea)
     
 ### Give the grader the permission to sudo
 ```bash
