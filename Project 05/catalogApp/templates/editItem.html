@@ -1,0 +1,28 @@
+{% extends "main.html" %}
+{% block content %}
+    <h1>Edit Item: {{item.title}}</h1>
+
+    <form action='#' method='post'>
+        <p>Title:</p>
+        <input class='form-control inputField' type='text' name='title' placeholder='{{item.title}}'>
+
+        <p>Description:</p>
+        <input class='form-control inputField' type='text' name='description' placeholder='{{item.description}}'>
+
+        <p>Category:</p>
+        <select class='form-control inputField' name='category_id'>
+            {% for category in categories %}
+              <option value="{{category.id}}" {% if category.id == item.category_id %}selected{% endif %}>{{category.name}}</option>
+            {% endfor %}
+        </select>
+
+        <p>Price:</p>
+        <div class='input-group inputField'>
+            <span class='input-group-addon'>$</span>
+            <input type='text' class='form-control' name='price' placeholder='{{item.price}}'>
+        </div>
+
+        <input class='btn btn-success' type='submit' value='Edit'>
+        <a class='btn btn-danger' href ='{{url_for('showCatalog')}}'>Cancel</a>
+    </form>
+{% endblock %}

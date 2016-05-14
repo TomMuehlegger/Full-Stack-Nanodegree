@@ -1,0 +1,12 @@
+{% extends "main.html" %}
+{% block content %}
+    <h1>New Category</h1>
+
+    <form action="#" method='post'>
+        <p>Name:</p>
+        <input class='form-control inputField' type='text' name='name' placeholder='Name'>
+
+        <input class="btn btn-success" type='submit', value = 'Create'>
+        <a class="btn btn-danger" href='{{url_for('showCatalog')}}'>Cancel</a>
+    </form>
+{% endblock %}

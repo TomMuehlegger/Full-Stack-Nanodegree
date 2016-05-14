@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Item Catalog.">
+        <meta name="author" content="Thomas Muehlegger">
+        <title>Item Catalog</title>
+        <!-- Latest compiled and minified Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+    </head>
+    <body>
+        <!-- Header of the website - Title and Login/Logout links -->
+        <header>
+            <div class="col-md-6 col-md-offset-2">
+                <h1>    
+                    <a class='home' href="{{url_for('showCatalog')}}">
+                        Catalog App
+                    </a>
+                </h1>
+            </div>
+            <div class="col-md-2 text-right headerButton">
+                <!-- Check a user logged in -->
+                {%if 'username' not in session %}
+                    <a href="{{url_for('login')}}">
+                        <button class="btn btn-default">
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Login
+                        </button>
+                    </a>    
+                {% else %}
+                    <a href="{{url_for('logout')}}">
+                        <button class="btn btn-default">
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Logout
+                        </button>
+                    </a> 
+                {% endif %}
+            </div>
+        </header>
+        <!-- Display flash messages -->
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-success" role="alert">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        <!-- Changing content -->
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 content">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </body>
+</html>
