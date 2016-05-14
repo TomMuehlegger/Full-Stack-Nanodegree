@@ -1,4 +1,8 @@
-#Full Stack Nanodegree Project 4 - Memory Game
+Project 4 - Memory Game
+
+Project: Memory Game Api (Project 04) of Udacity's Full-Stack Web Developer Nanodegree based on Google App Engine.
+
+Author: Thomas Mühlegger
 
 ## Set-Up Instructions:
 1.  Update the value of application in app.yaml to the app ID you have registered
