@@ -4,17 +4,17 @@ Project: Set up the Catalog App (Project 03) of Udacity's Full-Stack Web Develop
 
 Author: Thomas Mühlegger
 
-## i.
+## I.
 
 IP-Address: 52.36.159.226
 
 Port: 2200
 
-## ii.
+## II.
 
 URL to application: http://ec2-52-36-159-226.us-west-2.compute.amazonaws.com/
 
-## iii.
+## III.
 
 ### Launch your Virtual Machine with your Udacity account. Please note that upon graduation from the program your free Amazon AWS instance will no longer be available.
 1. Download Private Key from https://www.udacity.com/account#!/development_environment
@@ -232,7 +232,7 @@ apache2ctl restart
 #### Update Facebook application domain (on http://developers.facebook.com)
 To -> http://ec2-52-36-159-226.us-west-2.compute.amazonaws.com/
 
-## iv.
+## IV.
 https://www.udacity.com/account#!/development_environment
 http://stackoverflow.com/questions/12720967/how-to-change-postgresql-user-password
 University courses: 'Intro to Linux' and 'Realtional databases' ;-)
