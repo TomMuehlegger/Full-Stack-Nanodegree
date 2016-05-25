@@ -1,7 +1,7 @@
 # Repository of nanodegree "full stack web developer"
 All projects are stored in the different folders.
 
-![Certificate](full_stack_web_developer/certificate.pdf)
+![Certificate](https://github.com/TomMuehlegger/full_stack_web_developer/blob/master/certificate.pdf)
 
 ### About
 This repository contains project work for Udacity's [Full Stack Web Developer Nanodegree](https://www.udacity.com/course/nd004).
