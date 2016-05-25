@@ -1,4 +1,4 @@
-# Repository of nanodegree "full stack web developer"
+# Repository of Udacity's Nanodegree "Full Stack Web Developer"
 
 ![Certificate](https://raw.githubusercontent.com/TomMuehlegger/full_stack_web_developer/master/certificate.png)
 
