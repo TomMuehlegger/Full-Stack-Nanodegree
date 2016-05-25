@@ -1,10 +1,9 @@
 # Repository of nanodegree "full stack web developer"
-All projects are stored in the different folders.
 
-![Certificate](https://github.com/TomMuehlegger/full_stack_web_developer/blob/master/certificate.pdf)
+![Certificate](https://raw.githubusercontent.com/TomMuehlegger/full_stack_web_developer/master/certificate.png)
 
 ### About
-This repository contains project work for Udacity's [Full Stack Web Developer Nanodegree](https://www.udacity.com/course/nd004).
+This repository contains project work for Udacity's [Full Stack Web Developer Nanodegree](https://www.udacity.com/course/nd004). All projects are stored in the different folders.
 
 ### Projects
 - **p1** - Movie Trailer Website
